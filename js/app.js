@@ -18,8 +18,9 @@
 
   /* ---------- плавный скролл «как по льду» ---------- */
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const lite = document.documentElement.classList.contains('lite'); // телефон: меньше эффектов, чтобы не тормозило
   const iceEase = t => t < .5 ? 8 * t ** 4 : 1 - (-2 * t + 2) ** 4 / 2;
-  const lenis = (!reduceMotion && window.Lenis)
+  const lenis = (!reduceMotion && !lite && window.Lenis)
     ? new Lenis({ lerp: .045, wheelMultiplier: 1, smoothWheel: true, autoRaf: true })
     : null;
   const headerOffset = () => -((parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 64) + 12);
@@ -28,7 +29,7 @@
     const el = typeof target === 'string' ? $(target) : target;
     if (!el) return;
     if (lenis) lenis.scrollTo(el, { offset: headerOffset(), duration: 2.8, easing: iceEase, ...opts });
-    else el.scrollIntoView();
+    else el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
   }
   document.addEventListener('click', e => {
     const a = e.target.closest('a[href^="#"]');
@@ -63,7 +64,7 @@
   }
 
   // слои главного экрана едут с разной скоростью
-  {
+  if (!lite) {
     const hero = $('.hero');
     const paintHero = () => hero.style.setProperty('--sc', Math.min(scrollY, innerHeight * 1.3).toFixed(1));
     addEventListener('scroll', paintHero, { passive: true });
@@ -168,7 +169,7 @@
     grad.addColorStop(0, opt.core); grad.addColorStop(.3, opt.mid); grad.addColorStop(1, 'rgba(255,140,0,0)');
     sg.fillStyle = grad; sg.fillRect(0, 0, 64, 64);
 
-    let w = 0, h = 0, dpr = 1, list = [], visible = false, last = 0, mx = -9999, my = -9999;
+    let w = 0, h = 0, dpr = 1, list = [], visible = false, last = 0, drawn = 0, mx = -9999, my = -9999;
     const spawn = initial => ({
       x: Math.random() * w, y: initial ? Math.random() * h : h + 30 * dpr,
       r: (1.4 + Math.random() * 4.2) * dpr * opt.size,
@@ -177,10 +178,10 @@
       a: .4 + Math.random() * .6, vx: 0,
     });
     function resize() {
-      dpr = Math.min(devicePixelRatio || 1, 2);
+      dpr = lite ? 1 : Math.min(devicePixelRatio || 1, 2);
       w = canvas.width = Math.round(canvas.clientWidth * dpr);
       h = canvas.height = Math.round(canvas.clientHeight * dpr);
-      const n = Math.max(14, Math.round(opt.count * Math.min(1.3, (canvas.clientWidth * canvas.clientHeight) / (1440 * 900))));
+      const n = Math.max(lite ? 10 : 14, Math.round((lite ? opt.count * .4 : opt.count) * Math.min(1.3, (canvas.clientWidth * canvas.clientHeight) / (1440 * 900))));
       while (list.length < n) list.push(spawn(true));
       list.length = n;
     }
@@ -196,10 +197,12 @@
 
     function frame(t) {
       if (!visible || document.hidden) { last = 0; if (visible) requestAnimationFrame(frame); return; }
+      if (lite && t - drawn < 32) { requestAnimationFrame(frame); return; }
+      drawn = t;
       const dt = last ? Math.min(50, t - last) / 16.67 : 1;
       last = t;
       ctx.clearRect(0, 0, w, h);
-      ctx.globalCompositeOperation = 'lighter';
+      ctx.globalCompositeOperation = lite ? 'source-over' : 'lighter';
       for (let i = 0; i < list.length; i++) {
         const p = list[i];
         p.y -= p.vy * dt;

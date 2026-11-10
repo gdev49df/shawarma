@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<script>document.documentElement.classList.add('js')</script>
+<script>document.documentElement.classList.add('js');if(matchMedia('(pointer:coarse)').matches||innerWidth<760)document.documentElement.classList.add('lite')</script>
 <title>Шаурма Ашота — горячая шаурма с доставкой по Астане</title>
 <meta name="description" content="Шаурма Ашота в Астане: мясо с вертела, лаваш с гриля, соусы собственного приготовления. Доставка за 30–50 минут и самовывоз каждый день до 02:00.">
 <meta name="theme-color" content="#f26a00">
@@ -17,7 +17,7 @@
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="preload" href="assets/fonts/sofia-sans-extra-condensed-cyrillic-900-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="assets/img/shawarma.webp" as="image" imagesrcset="assets/img/shawarma-450.webp 450w, assets/img/shawarma.webp 900w" imagesizes="(max-width: 700px) 60vw, 420px">
+<link rel="preload" href="assets/img/shawarma.webp" as="image" imagesrcset="assets/img/shawarma-450.webp 406w, assets/img/shawarma.webp 813w" imagesizes="(max-width: 700px) 60vw, 420px">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -58,9 +58,9 @@
 
     <picture class="hero__photo" id="heroPhoto">
       <img src="assets/img/shawarma.webp"
-           srcset="assets/img/shawarma-450.webp 450w, assets/img/shawarma.webp 900w"
+           srcset="assets/img/shawarma-450.webp 406w, assets/img/shawarma.webp 813w"
            sizes="(max-width: 700px) 60vw, 420px"
-           width="900" height="1948" alt="Горячая шаурма с курицей, овощами и чесночным соусом" fetchpriority="high">
+           width="813" height="2000" alt="Шаурма с курицей, овощами и соусом в фирменной бумаге" fetchpriority="high">
     </picture>
 
     <!-- контур букв поверх фото -->
@@ -137,7 +137,7 @@
   <div class="build__grid">
     <form class="build__form" id="builder" novalidate></form>
     <aside class="build__card" aria-live="polite">
-      <img class="build__img" src="assets/img/shawarma-450.webp" width="450" height="974" alt="" loading="lazy">
+      <img class="build__img" src="assets/img/shawarma-450.webp" width="406" height="1000" alt="" loading="lazy">
       <h3 class="build__name">Ваша шаурма</h3>
       <p class="build__desc" id="buildDesc"></p>
       <div class="build__row">
