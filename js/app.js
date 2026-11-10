@@ -16,6 +16,55 @@
 
   const D = CONFIG.delivery;
 
+  /* ---------- плавный скролл «как по льду» ---------- */
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const iceEase = t => t < .5 ? 8 * t ** 4 : 1 - (-2 * t + 2) ** 4 / 2;
+  const lenis = (!reduceMotion && window.Lenis)
+    ? new Lenis({ lerp: .045, wheelMultiplier: 1, smoothWheel: true, autoRaf: true })
+    : null;
+  const headerOffset = () => -((parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 64) + 12);
+
+  function goTo(target, opts = {}) {
+    const el = typeof target === 'string' ? $(target) : target;
+    if (!el) return;
+    if (lenis) lenis.scrollTo(el, { offset: headerOffset(), duration: 2.8, easing: iceEase, ...opts });
+    else el.scrollIntoView();
+  }
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href^="#"]');
+    const href = a && a.getAttribute('href');
+    if (!href || href === '#') return;
+    const el = $(href);
+    if (!el) return;
+    e.preventDefault();
+    goTo(el, href === '#top' ? { offset: 0 } : {});
+    history.replaceState(null, '', href);
+  });
+
+  // слои главного экрана едут с разной скоростью
+  {
+    const hero = $('.hero');
+    const paintHero = () => hero.style.setProperty('--sc', Math.min(scrollY, innerHeight * 1.3).toFixed(1));
+    addEventListener('scroll', paintHero, { passive: true });
+    paintHero();
+  }
+
+  // мягкое появление блоков при прокрутке
+  const reveal = (!reduceMotion && 'IntersectionObserver' in window)
+    ? new IntersectionObserver((entries, obs) => entries.forEach(en => {
+        if (en.isIntersecting) { en.target.classList.add('in'); obs.unobserve(en.target); }
+      }), { threshold: .12, rootMargin: '0px 0px -6% 0px' })
+    : null;
+  function watchReveal(els) {
+    els.forEach(el => {
+      if (!reveal) return;
+      const i = [...el.parentElement.children].indexOf(el);
+      el.style.setProperty('--d', Math.min(i, 6) * 110 + 'ms');
+      el.classList.add('rv');
+      reveal.observe(el);
+    });
+  }
+
   /* ---------- контакты из конфига ---------- */
   const telHref = 'tel:+' + CONFIG.phone.replace(/\D/g, '');
   const waBase = 'https://wa.me/' + CONFIG.whatsapp;
@@ -88,9 +137,94 @@
   paintStatus();
   setInterval(paintStatus, 30000);
 
+  /* ---------- искры на фоне ---------- */
+  function initEmbers(canvas, opt) {
+    const ctx = canvas.getContext('2d');
+    const host = canvas.parentElement;
+    const sprite = document.createElement('canvas');
+    sprite.width = sprite.height = 64;
+    const sg = sprite.getContext('2d'), grad = sg.createRadialGradient(32, 32, 0, 32, 32, 32);
+    grad.addColorStop(0, opt.core); grad.addColorStop(.3, opt.mid); grad.addColorStop(1, 'rgba(255,140,0,0)');
+    sg.fillStyle = grad; sg.fillRect(0, 0, 64, 64);
+
+    let w = 0, h = 0, dpr = 1, list = [], visible = false, last = 0, mx = -9999, my = -9999;
+    const spawn = initial => ({
+      x: Math.random() * w, y: initial ? Math.random() * h : h + 30 * dpr,
+      r: (1.4 + Math.random() * 4.2) * dpr * opt.size,
+      vy: (.22 + Math.random() * .85) * opt.speed * dpr,
+      ph: Math.random() * 6.28, sw: (.25 + Math.random() * .7) * dpr, tw: .6 + Math.random() * 2.4,
+      a: .4 + Math.random() * .6, vx: 0,
+    });
+    function resize() {
+      dpr = Math.min(devicePixelRatio || 1, 2);
+      w = canvas.width = Math.round(canvas.clientWidth * dpr);
+      h = canvas.height = Math.round(canvas.clientHeight * dpr);
+      const n = Math.max(14, Math.round(opt.count * Math.min(1.3, (canvas.clientWidth * canvas.clientHeight) / (1440 * 900))));
+      while (list.length < n) list.push(spawn(true));
+      list.length = n;
+    }
+    new ResizeObserver(resize).observe(canvas);
+    resize();
+
+    host.addEventListener('pointermove', e => {
+      const r = canvas.getBoundingClientRect();
+      mx = (e.clientX - r.left) * dpr; my = (e.clientY - r.top) * dpr;
+    });
+    host.addEventListener('pointerleave', () => { mx = my = -9999; });
+    new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) requestAnimationFrame(frame); }).observe(host);
+
+    function frame(t) {
+      if (!visible || document.hidden) { last = 0; if (visible) requestAnimationFrame(frame); return; }
+      const dt = last ? Math.min(50, t - last) / 16.67 : 1;
+      last = t;
+      ctx.clearRect(0, 0, w, h);
+      ctx.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < list.length; i++) {
+        const p = list[i];
+        p.y -= p.vy * dt;
+        p.x += (Math.sin(t / 1000 * p.tw + p.ph) * p.sw * .6 + p.vx) * dt;
+        p.vx *= .96;
+        const dx = p.x - mx, dy = p.y - my, d2 = dx * dx + dy * dy, R = 150 * dpr;
+        if (d2 < R * R) { const d = Math.sqrt(d2) || 1, f = (1 - d / R) * 1.4; p.vx += dx / d * f * .35; p.y += dy / d * f * .6; }
+        if (p.y < -30 * dpr || p.x < -30 * dpr || p.x > w + 30 * dpr) { list[i] = spawn(false); continue; }
+        const edge = Math.min(1, (h - p.y) / (h * .12), p.y / (h * .3) + .15);
+        const flick = .65 + .35 * Math.sin(t / 1000 * p.tw * 2.2 + p.ph);
+        ctx.globalAlpha = Math.max(0, p.a * edge * flick * opt.alpha);
+        const sz = p.r * 6;
+        ctx.drawImage(sprite, p.x - sz / 2, p.y - sz / 2, sz, sz);
+      }
+      requestAnimationFrame(frame);
+    }
+  }
+  if (!reduceMotion && window.ResizeObserver && 'IntersectionObserver' in window) {
+    const LOOKS = {
+      hero: { count: 58, size: 1.3, speed: 1, alpha: 1, core: 'rgba(255,250,230,1)', mid: 'rgba(255,205,100,.6)' },
+      dark: { count: 34, size: .9, speed: .7, alpha: .8, core: 'rgba(255,196,96,1)', mid: 'rgba(242,106,0,.55)' },
+    };
+    $$('.fx').forEach(c => initEmbers(c, LOOKS[c.dataset.fx] || LOOKS.dark));
+  }
+
+  // свет на главном экране идёт за курсором
+  {
+    const hero = $('.hero');
+    if (!reduceMotion && matchMedia('(hover: hover)').matches) {
+      let tx = 50, ty = 46, cx = 50, cy = 46, raf = 0;
+      const tick = () => {
+        cx += (tx - cx) * .06; cy += (ty - cy) * .06;
+        hero.style.setProperty('--mx', cx.toFixed(2) + '%'); hero.style.setProperty('--my', cy.toFixed(2) + '%');
+        raf = (Math.abs(tx - cx) + Math.abs(ty - cy) > .05) ? requestAnimationFrame(tick) : 0;
+      };
+      hero.addEventListener('pointermove', e => {
+        const r = hero.getBoundingClientRect();
+        tx = (e.clientX - r.left) / r.width * 100; ty = (e.clientY - r.top) / r.height * 100;
+        if (!raf) raf = requestAnimationFrame(tick);
+      });
+    }
+  }
+
   /* ---------- шапка ---------- */
   const header = $('#header'), nav = $('#nav'), burger = $('#burger');
-  const onScroll = () => header.classList.toggle('is-solid', scrollY > innerHeight - 90);
+  const onScroll = () => header.classList.toggle('is-solid', scrollY > 48);
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
@@ -181,6 +315,8 @@
 
     menuList.innerHTML = html || `<p class="menu__empty">Ничего не нашли. <button type="button" id="resetFilters">Показать всё меню</button></p>`;
     $$('.chip').forEach(ch => ch.hidden = !$(`#cat-${ch.dataset.chip}`));
+    if (!paintMenu.done) { paintMenu.done = true; watchReveal($$('.cat')); }
+    else $$('.cat').forEach(c => c.classList.remove('rv'));
     markInCart();
     watchCats();
   }
@@ -329,15 +465,17 @@
     doneBox.hidden = true;
     paintCart(); paintTimes();
     if (!cartDialog.open) cartDialog.showModal();
+    lenis?.stop();
     $('#cartScroll').scrollTop = 0;
   }
-  const closeCart = () => cartDialog.open && cartDialog.close();
+  const closeCart = () => { if (cartDialog.open) cartDialog.close(); lenis?.start(); };
+  cartDialog.addEventListener('close', () => lenis?.start());
 
   document.addEventListener('click', e => {
     const t = e.target;
     if (t.closest('[data-open-cart]')) return openCart();
     if (t.closest('[data-close-cart]')) return closeCart();
-    if (t.closest('[data-go-menu]')) { closeCart(); return $('#menu').scrollIntoView(); }
+    if (t.closest('[data-go-menu]')) { closeCart(); return goTo('#menu'); }
     if (t.closest('[data-repeat]')) {
       const last = store.get('ashot-last', []);
       last.forEach(l => addLine(l, true));
@@ -493,6 +631,7 @@
   }
 
   /* ---------- старт ---------- */
+  watchReveal($$('.h-display, .menu__lead, .build__form .group, .build__card, .how__steps li, .facts > div, .faq__title, .faq details, .contacts__grid > *, .foot > *'));
   paintMenu();
   paintCart();
 })();

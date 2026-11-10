@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script>document.documentElement.classList.add('js')</script>
 <title>Шаурма Ашота — горячая шаурма с доставкой по Астане</title>
 <meta name="description" content="Шаурма Ашота в Астане: мясо с вертела, лаваш с гриля, соусы собственного приготовления. Доставка за 30–50 минут и самовывоз каждый день до 02:00.">
 <meta name="theme-color" content="#f26a00">
@@ -45,6 +46,9 @@
 
 <!-- главный экран -->
 <section class="hero" id="top">
+  <div class="hero__rays" aria-hidden="true"></div>
+  <div class="hero__glow" aria-hidden="true"></div>
+  <canvas class="fx" data-fx="hero" aria-hidden="true"></canvas>
   <div class="hero__stage" id="stage">
     <h1 class="hero__title">
       <span class="hero__word hero__word--top">Шаурма</span>
@@ -116,7 +120,7 @@
 
     <aside class="side" aria-label="Ваш заказ">
       <h3 class="side__title">Ваш заказ</h3>
-      <div class="side__items" data-cart-items="side"></div>
+      <div class="side__items" data-cart-items="side" data-lenis-prevent></div>
       <div class="side__foot" data-cart-foot="side"></div>
     </aside>
   </div>
@@ -124,6 +128,7 @@
 
 <!-- конструктор -->
 <section class="build" id="build">
+  <canvas class="fx" data-fx="dark" aria-hidden="true"></canvas>
   <div class="build__head">
     <h2 class="h-display">Собери свою</h2>
     <p>Выберите мясо, лаваш и соус, добавьте что любите и уберите что не едите. Цена считается сразу.</p>
@@ -144,6 +149,7 @@
 
 <!-- как готовим -->
 <section class="how" id="how">
+  <div class="hero__rays hero__rays--soft" aria-hidden="true"></div>
   <h2 class="h-display">Десять минут от заказа до первого укуса</h2>
   <ol class="how__steps">
     <li><h3>Срезаем мясо</h3><p>Курица и говядина маринуются ночь и жарятся на вертеле весь день. Срезаем только поджаренный слой.</p></li>
@@ -174,6 +180,7 @@
 
 <!-- контакты -->
 <section class="contacts" id="contacts">
+  <canvas class="fx" data-fx="dark" aria-hidden="true"></canvas>
   <div class="contacts__grid">
     <div class="contacts__info">
       <h2 class="h-display">Заходите</h2>
@@ -224,7 +231,7 @@
       </button>
     </header>
 
-    <div class="cart__scroll" id="cartScroll">
+    <div class="cart__scroll" id="cartScroll" data-lenis-prevent>
       <div class="cart__items" data-cart-items="cart"></div>
 
       <form class="order" id="order" novalidate hidden>
@@ -300,6 +307,7 @@
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
+<script src="js/vendor/lenis.min.js"></script>
 <script src="js/data.js"></script>
 <script src="js/app.js"></script>
 </body>
