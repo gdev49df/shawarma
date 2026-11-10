@@ -500,7 +500,7 @@ body:has(dialog[open]){overflow:hidden}
 .order__mode input:checked + span{background:transparent;color:var(--lavash)}
 
 /* поля адреса и сдачи сворачиваются, а не пропадают рывком */
-.collapse{display:grid;grid-template-rows:1fr;transition:grid-template-rows .95s var(--ease),opacity .7s var(--ease),margin-bottom .95s var(--ease)}
+.collapse{display:grid;align-self:start;grid-template-rows:1fr;transition:grid-template-rows .95s var(--ease),opacity .7s var(--ease),margin-bottom .95s var(--ease)}
 .collapse__in{min-height:0;overflow:clip;overflow-clip-margin:8px}
 .collapse.is-off{grid-template-rows:0fr;opacity:0;margin-bottom:-14px}
 .collapse.is-off .collapse__in{overflow-clip-margin:0px}
