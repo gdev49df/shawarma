@@ -1,0 +1,11 @@
+{
+  "name": "Шаурма Ашота",
+  "short_name": "Шаурма Ашота",
+  "description": "Горячая шаурма с доставкой по Астане",
+  "lang": "ru",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f26a00",
+  "theme_color": "#f26a00",
+  "icons": [{ "src": "assets/img/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

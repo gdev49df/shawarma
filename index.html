@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Шаурма Ашота — горячая шаурма с доставкой по Астане</title>
+<meta name="description" content="Шаурма Ашота в Астане: мясо с вертела, лаваш с гриля, соусы собственного приготовления. Доставка за 30–50 минут и самовывоз каждый день до 02:00.">
+<meta name="theme-color" content="#f26a00">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ru_KZ">
+<meta property="og:title" content="Шаурма Ашота — горячая шаурма в Астане">
+<meta property="og:description" content="Мясо с вертела, лаваш с гриля, соусы собственного приготовления. Доставка и самовывоз до 02:00.">
+<meta property="og:image" content="assets/img/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="preload" href="assets/fonts/sofia-sans-extra-condensed-cyrillic-900-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/img/shawarma.webp" as="image" imagesrcset="assets/img/shawarma-450.webp 450w, assets/img/shawarma.webp 900w" imagesizes="(max-width: 700px) 60vw, 420px">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<a class="skip" href="#menu">Перейти к меню</a>
+
+<header class="top" id="header">
+  <a class="top__logo" href="#top" aria-label="Шаурма Ашота, наверх">Шаурма Ашота</a>
+  <nav class="top__nav" id="nav" aria-label="Разделы сайта">
+    <a href="#menu">Меню</a>
+    <a href="#build">Собрать свою</a>
+    <a href="#delivery">Доставка</a>
+    <a href="#contacts">Контакты</a>
+  </nav>
+  <a class="top__phone" data-phone-link href="tel:+77000000000"><span data-phone>+7 700 000 00 00</span></a>
+  <button class="top__cart" type="button" data-open-cart aria-haspopup="dialog">
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8L5 8Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 8V6a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    <span>Корзина</span>
+    <b class="top__count" data-cart-count hidden>0</b>
+  </button>
+  <button class="top__burger" type="button" id="burger" aria-expanded="false" aria-controls="nav" aria-label="Открыть разделы">
+    <span></span><span></span>
+  </button>
+</header>
+
+<main>
+
+<!-- главный экран -->
+<section class="hero" id="top">
+  <div class="hero__stage" id="stage">
+    <h1 class="hero__title">
+      <span class="hero__word hero__word--top">Шаурма</span>
+      <span class="hero__word hero__word--bottom">Ашота</span>
+    </h1>
+
+    <picture class="hero__photo" id="heroPhoto">
+      <img src="assets/img/shawarma.webp"
+           srcset="assets/img/shawarma-450.webp 450w, assets/img/shawarma.webp 900w"
+           sizes="(max-width: 700px) 60vw, 420px"
+           width="900" height="1948" alt="Горячая шаурма с курицей, овощами и чесночным соусом" fetchpriority="high">
+    </picture>
+
+    <!-- контур букв поверх фото -->
+    <div class="hero__title hero__title--outline" aria-hidden="true">
+      <span class="hero__word hero__word--top">Шаурма</span>
+      <span class="hero__word hero__word--bottom">Ашота</span>
+    </div>
+
+    <span class="sticker sticker--a">мясо с вертела</span>
+    <span class="sticker sticker--b">лаваш с гриля</span>
+    <span class="sticker sticker--c">соус по рецепту Ашота</span>
+  </div>
+
+  <div class="hero__bar">
+    <p class="hero__status">
+      <span class="status" data-status><i></i><span data-status-text>Каждый день с 10:00 до 02:00</span></span>
+      <span class="hero__where"><span data-city>Астана</span>, <span data-address>пр. Туран, 00</span></span>
+    </p>
+    <div class="hero__actions">
+      <a class="btn btn--dark" href="#menu">Выбрать шаурму</a>
+      <a class="btn btn--ghost" data-phone-link href="tel:+77000000000">Позвонить</a>
+    </div>
+  </div>
+</section>
+
+<!-- бегущая строка -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker__track">
+    <span>доставка по всей Астане</span><span>работаем до 02:00</span><span>самовывоз со скидкой <b data-pickup-discount>10</b>%</span><span>оплата Kaspi</span><span>готовим за 10 минут</span>
+    <span>доставка по всей Астане</span><span>работаем до 02:00</span><span>самовывоз со скидкой <b data-pickup-discount>10</b>%</span><span>оплата Kaspi</span><span>готовим за 10 минут</span>
+  </div>
+</div>
+
+<!-- меню -->
+<section class="menu" id="menu">
+  <div class="menu__head">
+    <h2 class="h-display">Меню</h2>
+    <p class="menu__lead">Цены в тенге. Собираем каждую шаурму после заказа, поэтому она приезжает горячей.</p>
+  </div>
+
+  <div class="menu__tools" id="menuTools">
+    <div class="menu__filters">
+      <label class="search">
+        <span class="visually-hidden">Поиск по меню</span>
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><circle cx="11" cy="11" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input type="search" id="search" placeholder="Найти блюдо" autocomplete="off">
+      </label>
+      <label class="switch"><input type="checkbox" id="noHot"><span>Без острого</span></label>
+      <label class="switch"><input type="checkbox" id="vegOnly"><span>Без мяса</span></label>
+    </div>
+    <div class="chips" id="chips" role="navigation" aria-label="Категории меню"></div>
+  </div>
+
+  <div class="menu__body">
+    <div class="menu__list" id="menuList" aria-live="polite">
+      <noscript><p class="menu__empty">Чтобы увидеть меню и собрать заказ, включите JavaScript. Или просто позвоните: +7 700 000 00 00.</p></noscript>
+    </div>
+
+    <aside class="side" aria-label="Ваш заказ">
+      <h3 class="side__title">Ваш заказ</h3>
+      <div class="side__items" data-cart-items="side"></div>
+      <div class="side__foot" data-cart-foot="side"></div>
+    </aside>
+  </div>
+</section>
+
+<!-- конструктор -->
+<section class="build" id="build">
+  <div class="build__head">
+    <h2 class="h-display">Собери свою</h2>
+    <p>Выберите мясо, лаваш и соус, добавьте что любите и уберите что не едите. Цена считается сразу.</p>
+  </div>
+  <div class="build__grid">
+    <form class="build__form" id="builder" novalidate></form>
+    <aside class="build__card" aria-live="polite">
+      <img class="build__img" src="assets/img/shawarma-450.webp" width="450" height="974" alt="" loading="lazy">
+      <h3 class="build__name">Ваша шаурма</h3>
+      <p class="build__desc" id="buildDesc"></p>
+      <div class="build__row">
+        <output class="build__price" id="buildPrice" for="builder">0 ₸</output>
+        <button class="btn btn--fire" type="button" id="buildAdd">Добавить в корзину</button>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<!-- как готовим -->
+<section class="how" id="how">
+  <h2 class="h-display">Десять минут от заказа до первого укуса</h2>
+  <ol class="how__steps">
+    <li><h3>Срезаем мясо</h3><p>Курица и говядина маринуются ночь и жарятся на вертеле весь день. Срезаем только поджаренный слой.</p></li>
+    <li><h3>Режем овощи</h3><p>Огурцы, помидоры и капусту режем небольшими партиями, чтобы они оставались хрустящими.</p></li>
+    <li><h3>Заворачиваем</h3><p>Плотно, чтобы соус не вытекал, а начинка доходила до последнего куска.</p></li>
+    <li><h3>Жарим на гриле</h3><p>Минута с каждой стороны: лаваш подрумянивается и хрустит, сыр внутри плавится.</p></li>
+  </ol>
+</section>
+
+<!-- доставка -->
+<section class="delivery" id="delivery">
+  <div class="delivery__grid">
+    <div>
+      <h2 class="h-display">Доставка и оплата</h2>
+      <dl class="facts">
+        <div><dt>Привезём</dt><dd>за <span data-delivery-time>30–50 минут</span></dd></div>
+        <div><dt>Доставка</dt><dd><span data-delivery-fee>700</span> ₸, от <span data-delivery-free>7 000</span> ₸ бесплатно</dd></div>
+        <div><dt>Минимальный заказ</dt><dd><span data-delivery-min>3 000</span> ₸</dd></div>
+        <div><dt>Самовывоз</dt><dd>через <span data-pickup-time>10–15 минут</span>, скидка <span data-pickup-discount>10</span>%</dd></div>
+        <div><dt>Оплата</dt><dd>наличные, Kaspi, карта при получении</dd></div>
+      </dl>
+    </div>
+    <div class="faq" id="faq">
+      <h3 class="faq__title">Частые вопросы</h3>
+    </div>
+  </div>
+</section>
+
+<!-- контакты -->
+<section class="contacts" id="contacts">
+  <div class="contacts__grid">
+    <div class="contacts__info">
+      <h2 class="h-display">Заходите</h2>
+      <address>
+        <p class="contacts__addr"><span data-city>Астана</span>, <span data-address>пр. Туран, 00</span></p>
+        <p class="contacts__landmark" data-landmark></p>
+      </address>
+      <p class="contacts__hours">Каждый день с <span data-open>10:00</span> до <span data-close>02:00</span></p>
+      <p class="contacts__status"><span class="status status--onDark" data-status><i></i><span data-status-text></span></span></p>
+      <a class="contacts__phone" data-phone-link href="tel:+77000000000"><span data-phone>+7 700 000 00 00</span></a>
+      <div class="contacts__links">
+        <a class="btn btn--fire" data-wa-link href="#" target="_blank" rel="noopener">Написать в WhatsApp</a>
+        <a class="btn btn--line" data-2gis-link href="#" target="_blank" rel="noopener">Маршрут и отзывы в 2ГИС</a>
+        <a class="btn btn--line" data-ig-link href="#" target="_blank" rel="noopener" hidden>Instagram</a>
+      </div>
+    </div>
+    <div class="contacts__map">
+      <iframe id="map" title="Карта: Шаурма Ашота в Астане" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <p class="foot__brand">Шаурма Ашота</p>
+  <nav class="foot__nav" aria-label="Разделы в подвале">
+    <a href="#menu">Меню</a><a href="#build">Собрать свою</a><a href="#delivery">Доставка</a><a href="#contacts">Контакты</a>
+  </nav>
+  <p class="foot__copy">© <span id="year">2026</span> Шаурма Ашота, Астана. Вес блюд указан в готовом виде и может немного отличаться.</p>
+  <p class="foot__made">Создано <a href="https://t.me/bauyrzhanov_12_" target="_blank" rel="noopener">@bauyrzhanov_12_</a></p>
+</footer>
+
+<!-- нижняя панель корзины на телефоне -->
+<button class="dock" type="button" data-open-cart hidden>
+  <span class="dock__count" data-cart-count>0</span>
+  <span class="dock__label">Корзина</span>
+  <span class="dock__sum" data-cart-sum>0 ₸</span>
+</button>
+
+<!-- корзина и оформление -->
+<dialog class="cart" id="cart" aria-labelledby="cartTitle">
+  <div class="cart__inner">
+    <header class="cart__head">
+      <h2 class="cart__title" id="cartTitle">Корзина</h2>
+      <button class="cart__close" type="button" data-close-cart aria-label="Закрыть корзину">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </button>
+    </header>
+
+    <div class="cart__scroll" id="cartScroll">
+      <div class="cart__items" data-cart-items="cart"></div>
+
+      <form class="order" id="order" novalidate hidden>
+        <fieldset class="order__mode">
+          <legend class="visually-hidden">Способ получения</legend>
+          <label><input type="radio" name="mode" value="delivery" checked><span>Доставка</span></label>
+          <label><input type="radio" name="mode" value="pickup"><span>Самовывоз</span></label>
+        </fieldset>
+        <p class="order__hint" id="modeHint"></p>
+
+        <div class="field">
+          <label for="f-name">Имя</label>
+          <input id="f-name" name="name" type="text" autocomplete="given-name" required>
+          <p class="field__err" data-err="name"></p>
+        </div>
+        <div class="field">
+          <label for="f-phone">Телефон</label>
+          <input id="f-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__" required>
+          <p class="field__err" data-err="phone"></p>
+        </div>
+
+        <div data-only="delivery">
+          <div class="field">
+            <label for="f-street">Улица и дом</label>
+            <input id="f-street" name="street" type="text" autocomplete="street-address" placeholder="Например, Кабанбай батыра, 11">
+            <p class="field__err" data-err="street"></p>
+          </div>
+          <div class="field-row">
+            <div class="field"><label for="f-flat">Квартира, офис</label><input id="f-flat" name="flat" type="text" inputmode="numeric"></div>
+            <div class="field"><label for="f-entrance">Подъезд</label><input id="f-entrance" name="entrance" type="text" inputmode="numeric"></div>
+            <div class="field"><label for="f-floor">Этаж</label><input id="f-floor" name="floor" type="text" inputmode="numeric"></div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-time">Когда</label>
+          <select id="f-time" name="time"></select>
+        </div>
+
+        <div class="field">
+          <label for="f-pay">Оплата</label>
+          <select id="f-pay" name="pay">
+            <option value="Kaspi перевод">Kaspi перевод</option>
+            <option value="Наличные">Наличные</option>
+            <option value="Картой при получении">Картой при получении</option>
+          </select>
+        </div>
+        <div class="field" data-only="cash" hidden>
+          <label for="f-change">Сдача с какой купюры</label>
+          <input id="f-change" name="change" type="text" inputmode="numeric" placeholder="Например, 10 000">
+        </div>
+
+        <div class="field">
+          <label for="f-comment">Комментарий</label>
+          <textarea id="f-comment" name="comment" rows="2" placeholder="Код домофона, без лука, не звонить в дверь"></textarea>
+        </div>
+      </form>
+
+      <div class="done" id="done" hidden>
+        <h3>Заказ собран</h3>
+        <p>Мы открыли WhatsApp с готовым сообщением. Нажмите «Отправить», и мы сразу подтвердим заказ и время.</p>
+        <p>Если WhatsApp не открылся, позвоните: <a data-phone-link href="tel:+77000000000"><span data-phone>+7 700 000 00 00</span></a></p>
+        <div class="done__actions">
+          <a class="btn btn--fire" id="doneWa" href="#" target="_blank" rel="noopener">Открыть WhatsApp ещё раз</a>
+          <button class="btn btn--line-dark" type="button" data-close-cart>Вернуться на сайт</button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="cart__foot" data-cart-foot="cart"></footer>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="js/data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
