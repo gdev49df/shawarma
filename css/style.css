@@ -154,8 +154,6 @@ button{cursor:pointer}
   .hero__status{justify-content:space-between}
   .hero__actions .btn{flex:1}
 }
-@media (max-aspect-ratio:4/5) and (min-height:780px){.hero__stage{--sy:2.05}}
-@media (max-aspect-ratio:4/5) and (max-height:700px){.hero__stage{--sy:1.3}}
 
 /* ---------- бегущая строка ---------- */
 .ticker{background:var(--char);color:var(--lavash);overflow:hidden;padding:13px 0}
@@ -491,3 +489,38 @@ body:has(dialog[open]){overflow:hidden}
   .hero__rays,.hero__glow,.build::before,.contacts::before{animation:none !important}
   .fx{display:none}
 }
+
+/* ---------- переключатели и состояния ---------- */
+/* доставка / самовывоз: ползунок плавно переезжает */
+.order__mode{position:relative}
+.order__mode::before{content:"";position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:999px;background:var(--char);transition:transform .9s var(--ease)}
+.order__mode:has(input[value="pickup"]:checked)::before{transform:translateX(100%)}
+.order__mode label{position:relative;z-index:1}
+.order__mode span{transition:color .7s var(--ease)}
+.order__mode input:checked + span{background:transparent;color:var(--lavash)}
+
+/* поля адреса и сдачи сворачиваются, а не пропадают рывком */
+.collapse{display:grid;grid-template-rows:1fr;transition:grid-template-rows .95s var(--ease),opacity .7s var(--ease),margin-bottom .95s var(--ease)}
+.collapse__in{min-height:0;overflow:clip;overflow-clip-margin:8px}
+.collapse.is-off{grid-template-rows:0fr;opacity:0;margin-bottom:-14px}
+.collapse.is-off .collapse__in{overflow-clip-margin:0px}
+
+/* новая строка в корзине, шаги оформления, меню на телефоне */
+.line.is-new{animation:lineIn 1.1s var(--ease)}
+@keyframes lineIn{from{opacity:0;transform:translateX(26px)}}
+.order:not([hidden]),.done:not([hidden]){animation:fadeUp 1.1s var(--ease)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(26px)}}
+.cart.is-closing{animation:drawerOut .8s var(--ease) forwards}
+.cart.is-closing::backdrop{animation:fadeOut .8s ease forwards}
+@keyframes drawerOut{to{transform:translateX(100%)}}
+@keyframes fadeOut{to{opacity:0}}
+.top__nav.is-open a{animation:navIn 1.1s var(--ease) both}
+.top__nav.is-open a:nth-child(2){animation-delay:.07s}
+.top__nav.is-open a:nth-child(3){animation-delay:.14s}
+.top__nav.is-open a:nth-child(4){animation-delay:.21s}
+@keyframes navIn{from{opacity:0;transform:translateY(-20px)}}
+
+/* выбранные варианты чуть «нажимаются» */
+.opt span,.chip,.buy,.btn{will-change:auto}
+.opt:active span{transform:scale(.96)}
+.opt span{transition:background-color .6s var(--ease),color .6s var(--ease),border-color .6s var(--ease),transform .5s var(--ease)}

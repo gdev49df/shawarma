@@ -41,6 +41,27 @@
     history.replaceState(null, '', href);
   });
 
+  // высота букв на телефоне считается от малой высоты экрана (svh): она не меняется,
+  // когда браузер прячет или показывает панель, поэтому буквы больше не «прыгают»
+  {
+    const stage = $('#stage'), bar = $('.hero__bar');
+    const probe = document.createElement('div');
+    probe.style.cssText = 'position:fixed;left:-9px;top:0;width:1px;height:100svh;visibility:hidden;pointer-events:none';
+    document.body.append(probe);
+    const fit = () => {
+      const svh = probe.offsetHeight, w = document.documentElement.clientWidth;
+      if (!svh || w / svh >= .8) { stage.style.removeProperty('--sy'); return; }
+      const header = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) || 64;
+      const stageH = svh - header - bar.offsetHeight;
+      const sy = Math.max(1.15, Math.min(2.1, .82 * stageH / (1.58 * w * .315)));
+      stage.style.setProperty('--sy', sy.toFixed(3));
+    };
+    fit();
+    new ResizeObserver(fit).observe(probe);
+    addEventListener('resize', fit);
+    addEventListener('orientationchange', fit);
+  }
+
   // слои главного экрана едут с разной скоростью
   {
     const hero = $('.hero');
@@ -262,6 +283,22 @@
     }
   }
 
+  /* ---------- плавные числа ---------- */
+  function tweenNum(el, from, to) {
+    if (!el) return;
+    cancelAnimationFrame(el._tw);
+    if (reduceMotion || from === to) { el.textContent = money(to); return; }
+    const t0 = performance.now(), dur = 1000;
+    const step = now => {
+      const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 4);
+      el.textContent = money(from + (to - from) * e);
+      if (k < 1) el._tw = requestAnimationFrame(step);
+    };
+    el._tw = requestAnimationFrame(step);
+  }
+  let shownTotal = 0, shownBuild = 0;
+  const seenLines = new Set();
+
   /* ---------- корзина: данные ---------- */
   let cart = store.get('ashot-cart', []);       // [{key, name, meta, price, qty}]
   let mode = store.get('ashot-mode', 'delivery');
@@ -316,7 +353,7 @@
     menuList.innerHTML = html || `<p class="menu__empty">Ничего не нашли. <button type="button" id="resetFilters">Показать всё меню</button></p>`;
     $$('.chip').forEach(ch => ch.hidden = !$(`#cat-${ch.dataset.chip}`));
     if (!paintMenu.done) { paintMenu.done = true; watchReveal($$('.cat')); }
-    else $$('.cat').forEach(c => c.classList.remove('rv'));
+    else if (!reduceMotion) menuList.animate([{ opacity: .25, transform: 'translateY(14px)' }, { opacity: 1, transform: 'none' }], { duration: 900, easing: 'cubic-bezier(.22,1,.36,1)' });
     markInCart();
     watchCats();
   }
@@ -348,6 +385,7 @@
       const d = MENU.find(x => x.id === id), v = d.variants[+i];
       const catTitle = d.cat === 'shawarma' ? 'Шаурма «' + d.name + '»' : d.cat === 'sauces' ? 'Соус ' + d.name.toLowerCase() : d.name;
       addLine({ key: b.dataset.add, name: catTitle, meta: v.label, price: v.price });
+      if (!reduceMotion) b.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.09)' }, { transform: 'scale(1)' }], { duration: 800, easing: 'cubic-bezier(.22,1,.36,1)' });
       return;
     }
     if (e.target.id === 'resetFilters') {
@@ -356,7 +394,8 @@
       paintMenu();
     }
   });
-  $('#search').addEventListener('input', e => { filters.q = e.target.value; paintMenu(); });
+  let searchTimer;
+  $('#search').addEventListener('input', e => { filters.q = e.target.value; clearTimeout(searchTimer); searchTimer = setTimeout(paintMenu, 160); });
   $('#noHot').addEventListener('change', e => { filters.noHot = e.target.checked; paintMenu(); });
   $('#vegOnly').addEventListener('change', e => { filters.veg = e.target.checked; paintMenu(); });
 
@@ -383,7 +422,7 @@
   let lastWaUrl = '';
 
   function linesHtml() {
-    return cart.map(l => `<div class="line">
+    return cart.map(l => `<div class="line${seenLines.has(l.key) ? '' : ' is-new'}">
       <p class="line__name">${esc(l.name)}</p>
       <p class="line__sum">${money(l.price * l.qty)}</p>
       <p class="line__meta">${esc(l.meta || '')}</p>
@@ -399,7 +438,7 @@
     const rows = [`<div><span>${t.count} ${plural(t.count, ['позиция', 'позиции', 'позиций'])}</span><span>${money(t.sub)}</span></div>`];
     if (t.discount) rows.push(`<div><span>Скидка за самовывоз ${D.pickupDiscount}%</span><span>−${money(t.discount)}</span></div>`);
     if (mode === 'delivery') rows.push(`<div><span>Доставка</span><span>${t.fee ? money(t.fee) : 'бесплатно'}</span></div>`);
-    rows.push(`<div class="sum__total"><span>Итого</span><span>${money(t.total)}</span></div>`);
+    rows.push(`<div class="sum__total"><span>Итого</span><span data-total>${money(t.total)}</span></div>`);
     let note = '';
     if (t.belowMin) note = `До минимального заказа на доставку не хватает <b>${money(D.minOrder - t.sub)}</b>. Или заберите сами.`;
     else if (t.fee) note = `Ещё <b>${money(D.freeFrom - t.sub)}</b>, и доставка станет бесплатной.`;
@@ -418,7 +457,6 @@
         if (bump) { el.classList.remove('is-bump'); void el.offsetWidth; el.classList.add('is-bump'); }
       }
     });
-    $$('[data-cart-sum]').forEach(el => el.textContent = money(t.total));
     const dock = $('.dock');
     dock.hidden = !t.count;
     document.body.classList.toggle('has-dock', !!t.count);
@@ -440,13 +478,21 @@
       $('[data-cart-foot="cart"]').innerHTML = t.count
         ? sumHtml(t) + `<button class="btn btn--dark" type="submit" form="order" ${t.belowMin ? 'disabled' : ''}>Отправить заказ в WhatsApp</button>` : '';
     }
+    cart.forEach(l => seenLines.add(l.key));
+    const from = shownTotal; shownTotal = t.total;
+    $$('[data-total], [data-cart-sum]').forEach(el => tweenNum(el, from, t.total));
     paintMode();
     markInCart();
   }
 
+  function setCollapse(el, off) {
+    el.classList.toggle('is-off', off);
+    el.inert = off;
+  }
+
   function paintMode() {
     $$('input[name="mode"]', orderForm).forEach(r => r.checked = r.value === mode);
-    $$('[data-only="delivery"]', orderForm).forEach(el => el.hidden = mode !== 'delivery');
+    setCollapse($('[data-only="delivery"]', orderForm), mode !== 'delivery');
     $('#modeHint').textContent = mode === 'delivery'
       ? `Привезём за ${D.time}. Доставка ${money(D.fee)}, от ${money(D.freeFrom)} бесплатно.`
       : `Заберите сами: ${CONFIG.city}, ${CONFIG.address}. Будет готово через ${D.pickupTime}, скидка ${D.pickupDiscount}%.`;
@@ -468,7 +514,16 @@
     lenis?.stop();
     $('#cartScroll').scrollTop = 0;
   }
-  const closeCart = () => { if (cartDialog.open) cartDialog.close(); lenis?.start(); };
+  let closing = false;
+  const closeCart = () => {
+    lenis?.start();
+    if (!cartDialog.open || closing) return;
+    if (reduceMotion) return cartDialog.close();
+    closing = true;
+    cartDialog.classList.add('is-closing');
+    setTimeout(() => { cartDialog.close(); cartDialog.classList.remove('is-closing'); closing = false; }, 800);
+  };
+  cartDialog.addEventListener('cancel', e => { e.preventDefault(); closeCart(); });
   cartDialog.addEventListener('close', () => lenis?.start());
 
   document.addEventListener('click', e => {
@@ -493,7 +548,7 @@
 
   orderForm.addEventListener('change', e => {
     if (e.target.name === 'mode') { mode = e.target.value; store.set('ashot-mode', mode); paintCart(); paintTimes(); }
-    if (e.target.name === 'pay') $('[data-only="cash"]', orderForm).hidden = e.target.value !== 'Наличные';
+    if (e.target.name === 'pay') setCollapse($('[data-only="cash"]', orderForm), e.target.value !== 'Наличные');
   });
 
   // маска телефона: +7 (7xx) xxx-xx-xx
@@ -607,13 +662,15 @@
   function paintBuilder() {
     const b = readBuilder();
     $('#buildDesc').textContent = b.parts.join(', ') + '.';
-    $('#buildPrice').textContent = money(b.price);
+    tweenNum($('#buildPrice'), shownBuild, b.price);
+    shownBuild = b.price;
   }
   builder.addEventListener('change', paintBuilder);
   $('#buildAdd').addEventListener('click', () => {
     const b = readBuilder();
     addLine({ key: b.key, name: 'Своя шаурма', meta: b.parts.join(', '), price: b.price }, true);
     toast('Ваша шаурма в корзине');
+    if (!reduceMotion) $('#buildAdd').animate([{ transform: 'scale(1)' }, { transform: 'scale(1.07)' }, { transform: 'scale(1)' }], { duration: 800, easing: 'cubic-bezier(.22,1,.36,1)' });
   });
   paintBuilder();
 
