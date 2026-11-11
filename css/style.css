@@ -256,11 +256,13 @@ button{cursor:pointer}
 .opt:hover span{border-color:var(--lavash)}
 .opt input:checked + span{background:var(--lavash);border-color:var(--lavash);color:var(--char);font-weight:700}
 .opt input:focus-visible + span{outline:3px solid var(--ember);outline-offset:3px}
-.build__card{position:sticky;top:calc(var(--header-h) + 20px);background:var(--fire);color:var(--char);border-radius:28px;padding:26px 26px 24px;overflow:hidden}
-.build__img{width:112px;float:right;margin:-8px -18px 0 12px;transform:rotate(9deg);filter:drop-shadow(0 12px 14px rgba(90,30,0,.45));shape-outside:polygon(20% 0,100% 0,100% 100%,30% 100%)}
+.build__card{position:sticky;top:calc(var(--header-h) + 20px);background:var(--fire);color:var(--char);border-radius:28px;padding:26px 26px 24px;overflow:visible}
+.build__img{position:absolute;z-index:1;right:-34px;top:-66px;height:480px;width:auto;max-width:none;transform:rotate(4deg);transform-origin:50% 60%;pointer-events:none;animation:cardFloat 8s ease-in-out infinite}
+@keyframes cardFloat{0%,100%{transform:translateY(0) rotate(4deg)}50%{transform:translateY(-10px) rotate(2.4deg)}}
+.build__head{margin-bottom:clamp(64px,7vw,96px)}
 .build__name{font-family:var(--display);font-weight:900;text-transform:uppercase;font-size:52px;line-height:.9;max-width:4.2em}
-.build__desc{margin-top:14px;font-weight:500;line-height:1.45;min-height:7.5em}
-.build__row{clear:both;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}
+.build__desc{margin-top:14px;font-weight:500;line-height:1.45;min-height:7.5em;max-width:190px}
+.build__row{position:relative;z-index:2;clear:both;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:14px}
 .build__price{font-family:var(--display);font-weight:900;font-size:60px;line-height:1}
 .build__card .btn--fire{background:var(--char);color:var(--lavash)}
 .build__card .btn--fire:hover{background:#000}
@@ -382,7 +384,10 @@ button{cursor:pointer}
 }
 @media (max-width:920px){
   .build__grid,.delivery__grid,.contacts__grid{grid-template-columns:1fr}
-  .build__card{position:static}
+  .build__card{position:relative;margin-top:88px}
+  .build__img{height:360px;right:2px;top:-82px}
+  .build__desc{max-width:175px}
+  .build__head{margin-bottom:24px}
   .build__desc{min-height:0}
   .how__steps{grid-template-columns:repeat(2,1fr)}
 }
@@ -536,3 +541,5 @@ body:has(dialog[open]){overflow:hidden}
 .lite .rv{transition-duration:1s,1.1s}
 .lite .hero__title{text-shadow:none}
 .lite .hero__word{text-shadow:none}
+
+.lite .build__img{animation:none}
